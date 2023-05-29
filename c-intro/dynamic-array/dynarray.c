@@ -38,7 +38,7 @@ void DA_push (DA* da, void* x) {
     da->capacity *= 2;
     void **new_array = malloc(sizeof(void*) * da->capacity);
     if (new_array == NULL) {
-      // Should be some sort of error communication here
+      // Should do some sort of error communication here
       da->size--;
       return;
     }
@@ -53,6 +53,7 @@ void *DA_pop(DA *da) {
     da->size--;
     return da->array[da->size];
   }
+  return NULL;
 }
 
 void DA_set(DA *da, void *x, int i) {
@@ -70,7 +71,6 @@ void *DA_get(DA *da, int i) {
 
 
 void DA_free(DA *da) {
-  // TODO deallocate anything on the heap
   free(da->array);
   free(da);
 }
