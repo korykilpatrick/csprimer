@@ -33,10 +33,13 @@ int DA_size(DA *da) {
 }
 
 void DA_push (DA* da, void* x) {
-  da->array[da->size++] = x;
-  if (da->size >= da->capacity) {
-    da->capacity *= 2;
-    void **new_array = malloc(sizeof(void*) * da->capacity);
+  if (da->size == da->capacity) {
+    da->capacity <<= 1;
+    // realloc will keep contents in place if new capacity exists in contiguous memory
+    // otherwise it will allocate new memory and copy contents over
+    // i didnt know about it until after I wrote the code below
+    // da->array = realloc(da->array, sizeof(void *) * da->capacity);
+    void **new_array = malloc(sizeof(void *) * da->capacity);
     if (new_array == NULL) {
       // Should do some sort of error communication here
       da->size--;
@@ -46,13 +49,11 @@ void DA_push (DA* da, void* x) {
     free(da->array);
     da->array = new_array;
   }
+  da->array[da->size++] = x;
 }
 
 void *DA_pop(DA *da) {
-  if (da->size > 0) {
-    da->size--;
-    return da->array[da->size];
-  }
+  if (da->size > 0) return da->array[--da->size];
   return NULL;
 }
 
@@ -65,6 +66,7 @@ void DA_set(DA *da, void *x, int i) {
 }
 
 void *DA_get(DA *da, int i) {
+  if (i < 0) i += da->size;
   if (0 <= i && i < da->size) return da->array[i];
   return NULL;
 }
